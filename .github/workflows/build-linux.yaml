@@ -23,13 +23,12 @@ jobs:
     - name: Build Console App
       run: dotnet build openai-playground/openai-playground.csproj -c Release -r linux-x64
 
-    - name: Get Previous Release SHA
+    - name: Get Tag Message
       if: startsWith(github.ref, 'refs/tags/v')
-      id: get_prev_release_sha
+      id: get_tag_message
       run: |
-        prev_release_tag=$(echo "${{ github.ref }}" | sed 's/^v//')
-        prev_release_sha=$(git rev-list -n 1 "${prev_release_tag}" --)
-        echo "::set-output name=prev_release_sha::${prev_release_sha}"
+        tag_message=$(git tag -l -n99 "${{ github.ref }}" | awk '{if (NR==1) {sub(/^[^\t]*\t/,"");print}}')
+        echo "::set-output name=tag_message::${tag_message}"
 
     - name: Create Release
       if: startsWith(github.ref, 'refs/tags/v')
@@ -38,14 +37,14 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         RELEASE_TAG: ${{ github.ref }}
-        PREV_RELEASE_SHA: ${{ steps.get_prev_release_sha.outputs.prev_release_sha }}
+        TAG_MESSAGE: ${{ steps.get_tag_message.outputs.tag_message }}
       with:
         tag_name: ${{ github.ref }}
         release_name: Release ${{ github.ref }}
         body: |
           Changes in this release:
           |
-            $(git log --pretty=format:'- %s' --abbrev-commit "${PREV_RELEASE_SHA}..HEAD" | sed 's/`/\\`/g')
+            ${TAG_MESSAGE}
         draft: false
         prerelease: false
 
