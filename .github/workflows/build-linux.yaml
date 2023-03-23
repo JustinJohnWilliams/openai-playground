@@ -27,8 +27,8 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/v')
       id: get_tag_message
       run: |
-        tag_message=$(git tag -l -n99 "${{ github.ref }}" | awk '{if (NR==1) {sub(/^[^\t]*\t/,"");print}}')
-        echo "::set-output name=tag_message::${tag_message}"
+        TAG_MESSAGE=$(git tag -l -n99 "${{ github.ref }}" | awk '{if (NR==1) {sub(/^[^\t]*\t/,"");print}}')
+        echo "::set-output name=TAG_MESSAGE::${TAG_MESSAGE}"
 
     - name: Create Release
       if: startsWith(github.ref, 'refs/tags/v')
