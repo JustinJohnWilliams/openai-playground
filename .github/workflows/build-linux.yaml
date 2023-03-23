@@ -45,7 +45,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: $ {{ steps.create_release.outputs.upload_url }}
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: openai-playground/bin/Release/net6.0/linux-x64/openai-playground
         asset_name: openai-playground-linux-x64
         asset_content_type: application/octet-stream
