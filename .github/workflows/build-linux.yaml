@@ -29,7 +29,6 @@ jobs:
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        # Store the release ID in an environment variable
         RELEASE_ID: ${{ steps.create_release.outputs.release_id }}
       with:
         tag_name: ${{ github.ref }}
@@ -43,12 +42,12 @@ jobs:
       run: echo "RELEASE_ID=${{ env.RELEASE_ID }}" >> $GITHUB_ENV
 
     - name: Upload Release Asset
-      if: steps.create_release.outputs.release_id != ''
+      if: env.RELEASE_ID != ''
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        upload_url: https://uploads.github.com/repos/${{ github.repository }}/releases/${{ env.RELEASE_ID }}/assets{?name,label}
         asset_path: openai-playground/bin/Release/net6.0/linux-x64/openai-playground
         asset_name: openai-playground-linux-x64
         asset_content_type: application/octet-stream
