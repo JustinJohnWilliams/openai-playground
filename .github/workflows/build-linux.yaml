@@ -29,6 +29,8 @@ jobs:
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # Store the release ID in an environment variable
+        RELEASE_ID: ${{ steps.create_release.outputs.release_id }}
       with:
         tag_name: ${{ github.ref }}
         release_name: Release ${{ github.ref }}
@@ -37,6 +39,8 @@ jobs:
           - Build Dotnet 6 Console App
         draft: false
         prerelease: false
+      # Write the environment file to disk
+      run: echo "RELEASE_ID=${{ env.RELEASE_ID }}" >> $GITHUB_ENV
 
     - name: Upload Release Asset
       if: steps.create_release.outputs.release_id != ''
