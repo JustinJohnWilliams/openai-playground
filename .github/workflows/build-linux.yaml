@@ -23,28 +23,15 @@ jobs:
     - name: Build Console App
       run: dotnet build openai-playground/openai-playground.csproj -c Release -r linux-x64
 
-    - name: Get Tag Message
-      if: startsWith(github.ref, 'refs/tags/v')
-      id: get_tag_message
-      run: |
-        TAG_MESSAGE=$(git tag -l -n99 "${{ github.ref }}" | awk '{if (NR==1) {sub(/^[^\t]*\t/,"");print}}')
-        echo "::set-output name=TAG_MESSAGE::${TAG_MESSAGE}"
-
     - name: Create Release
       if: startsWith(github.ref, 'refs/tags/v')
       id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        RELEASE_TAG: ${{ github.ref }}
-        TAG_MESSAGE: ${{ steps.get_tag_message.outputs.tag_message }}
       with:
         tag_name: ${{ github.ref }}
         release_name: Release ${{ github.ref }}
-        body: |
-          Changes in this release:
-          |
-            ${{ env.TAG_MESSAGE }}
         draft: false
         prerelease: false
 
