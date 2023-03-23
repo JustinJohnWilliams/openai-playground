@@ -13,7 +13,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         arch: [x64, arm64]
-        rid: ['linux-x64', 'linux-arm64', 'osx-x64', 'osx-arm64']
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET
@@ -23,7 +22,7 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore ./openai-playground/openai-playground.csproj
     - name: Build and compile
-      run: dotnet publish ./openai-playground/openai-playground.csproj -c Release -r ${{ matrix.rid }} --self-contained true /p:PublishTrimmed=true /p:PublishSingleFile=true /p:IncludeSymbols=true
+      run: dotnet publish ./openai-playground/openai-playground.csproj -c Release -r ${{ matrix.os }}-${{ matrix.arch }} --self-contained true /p:PublishTrimmed=true /p:PublishSingleFile=true /p:IncludeSymbols=true
       working-directory: ${{ github.workspace }}
     - name: Create Release
       id: create_release
@@ -36,12 +35,14 @@ jobs:
         body: Automated release by Github Actions
         draft: false
         prerelease: false
-    - name: Upload Release Asset
+    - name: Upload Release Assets
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./openai-playground/bin/Release/net6.0/${{ matrix.rid }}/publish/openai-playground
-        asset_name: openai-playground-${{ matrix.rid }}
+        asset_path: |
+          ./openai-playground/bin/Release/net6.0/${{ matrix.os }}-${{ matrix.arch }}/publish/openai-playground
+          ./openai-playground/bin/Release/net6.0/${{ matrix.os }}-${{ matrix.arch }}/publish/openai-playground.pdb
+        asset_name: openai-playground-${{ matrix.os }}-${{ matrix.arch }}
         asset_content_type: application/octet-stream
