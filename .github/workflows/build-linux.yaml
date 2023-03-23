@@ -44,7 +44,7 @@ jobs:
         body: |
           Changes in this release:
           |
-            ${TAG_MESSAGE}
+            ${{ env.TAG_MESSAGE }}
         draft: false
         prerelease: false
 
