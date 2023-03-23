@@ -13,6 +13,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         arch: [x64, arm64]
+        rid: ['linux-x64', 'linux-arm64', 'osx-x64', 'osx-arm64']
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET
