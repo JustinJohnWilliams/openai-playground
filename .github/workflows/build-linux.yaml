@@ -1,0 +1,36 @@
+---
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 7.0.100
+    - name: Build and Publish
+      run: dotnet publish openai-playground -c Release -r linux-x64
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v1.$(expr $(echo "${{ github.ref }}" | awk -F'/' '{print $3}') + 1)
+        release_name: Release $(expr $(echo "${{ github.ref }}" | awk -F'/' '{print $3}') + 1)
+        body: |
+          This is release $(expr $(echo "${{ github.ref }}" | awk -F'/' '{print $3}') + 1).
+        draft: false
+        prerelease: false
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: openai-playground
+        path: bin/Release/net8.0/linux-x64/publish
