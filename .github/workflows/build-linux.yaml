@@ -29,7 +29,6 @@ jobs:
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        RELEASE_ID: ${{ steps.create_release.outputs.release_id }}
       with:
         tag_name: ${{ github.ref }}
         release_name: Release ${{ github.ref }}
@@ -39,13 +38,18 @@ jobs:
         draft: false
         prerelease: false
 
+    - name: Set Release ID
+      if: steps.create_release.outputs.release_id != ''
+      id: set_release_id
+      run: echo "::set-output name=release_id::${{ steps.create_release.outputs.release_id }}"
+
     - name: Upload Release Asset
-      if: env.RELEASE_ID != ''
+      if: steps.set_release_id.outputs.release_id != ''
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: https://uploads.github.com/repos/${{ github.repository }}/releases/${{ env.RELEASE_ID }}/assets{?name,label}
+        upload_url: https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.set_release_id.outputs.release_id }}/assets{?name,label}
         asset_path: openai-playground/bin/Release/net6.0/linux-x64/openai-playground
         asset_name: openai-playground-linux-x64
         asset_content_type: application/octet-stream
