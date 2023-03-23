@@ -44,9 +44,8 @@ jobs:
         release_name: Release ${{ github.ref }}
         body: |
           Changes in this release:
-          ```
-          $(git log --pretty=format:'- %s' --abbrev-commit "${PREV_RELEASE_SHA}..HEAD" | sed 's/`/\\`/g')
-          ```
+          |
+            $(git log --pretty=format:'- %s' --abbrev-commit "${PREV_RELEASE_SHA}..HEAD" | sed 's/`/\\`/g')
         draft: false
         prerelease: false
 
